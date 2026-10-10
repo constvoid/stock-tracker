@@ -1,29 +1,29 @@
 # Handoff — pick up here
 
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
-**Branch:** `main` tracking `origin/main`  
-**Status:** Phases 0–2 complete. Domain + PortfolioMath unit tests pass (13).
-Next is Phase 3 (SwiftData persistence and brokerage-file import).  
+**Branch:** `phase-3-persistence-import` (Phases 3–4 work; uncommitted unless
+committed in a later session)  
+**Status:** Phases 0–4 complete. Local SwiftData app with import UI and
+Overview/Holdings/Account Detail on imported prices. `swift test`: 27.  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) for the ordered delivery plan — start Phase 3.
-3. Use focused docs as needed: [architecture.md](architecture.md),
-   [import-design.md](import-design.md), [domain-and-data.md](domain-and-data.md).
-4. Reconcile any requested change in `SPEC.md` first, then design, TODO, code,
-   and tests.
+2. Read [TODO.md](TODO.md) — start Phase 5 (live market data).
+3. Use focused docs: [architecture.md](architecture.md), [ui-design.md](ui-design.md).
 
-## Implemented so far
+## Implemented through Phase 4
 
-- Privacy gitignore; fabricated fixtures in `Fixtures/Anonymized/`.
-- `StockTracker.xcodeproj` (XcodeGen) + three-tab app shell + `AppDependencies`
-  fakes.
-- `StockTrackerKit` modules with dependency rules; no CarPlay target.
-- Domain: Money/Quantity/UnitCost, identities, hybrid `PositionSlice`, accounts.
-- PortfolioMath: WAC, account/portfolio rollups, duplicate-symbol aggregation,
-  tax-term/history capability derivation.
+- Import pipeline + SwiftData persistence (Phase 3).
+- DesignSystem tokens, money formatting, directional change indicators.
+- Read models / use cases: overview, holdings, account detail, settings,
+  visibility, stale resolution.
+- Three-tab shell: Overview (totals, movers placeholder, account breakdown),
+  Holdings (aggregated + cash), Settings (file import preview/confirm/result,
+  toggles, stale actions).
+- Account Detail sheet with cash-only and tax-term gating.
+- Chart UI deferred to Phase 6; Overview shows quality disclosure instead.
 
 ## Build notes
 
@@ -37,9 +37,9 @@ xcodebuild -project StockTracker.xcodeproj -scheme StockTracker \
 
 ## What happens next
 
-1. Phase 3: versioned SwiftData, account-level wipe/replace, Schwab/E*TRADE
-   parsers against anonymized fixtures, stale detection, redacted diagnostics.
-2. Do not start Phase 4 UI until Phase 3 exit criteria pass.
+1. Phase 5: Yahoo-style quotes, previous close / Movers, pull-to-refresh,
+   cache freshness; network failure must not alter holdings.
+2. Do not start reconstructed history (Phase 6) until Phase 5 exit criteria pass.
 
 ## Session rules
 

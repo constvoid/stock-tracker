@@ -1,8 +1,6 @@
-import Domain
 import Foundation
-import PortfolioMath
 
-/// Marker type so Application builds before use cases land in later phases.
+/// Marker retained so Application product always has a stable module surface.
 public enum ApplicationModule: Sendable {
     public static let name = "Application"
 }

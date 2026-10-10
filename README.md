@@ -9,8 +9,9 @@ Continue from [docs/HANDOFF.md](docs/HANDOFF.md). Full design index:
 
 ## Status
 
-Phases 0–2 complete: privacy gate, anonymized fixtures, app shell, Domain, and
-PortfolioMath. Next: persistence and import (Phase 3).
+Phases 0–4 complete on `phase-3-persistence-import`: import/persistence plus
+Overview, Holdings, Settings/Import UI on imported prices. Next: Phase 5
+live market data.
 
 ## Build
 

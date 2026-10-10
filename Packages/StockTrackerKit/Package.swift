@@ -37,7 +37,10 @@ let package = Package(
         ),
         .target(
             name: "Persistence",
-            dependencies: ["Domain", "Application"]
+            dependencies: ["Domain", "Application"],
+            linkerSettings: [
+                .linkedFramework("SwiftData"),
+            ]
         ),
         .target(
             name: "MarketData",
@@ -48,7 +51,7 @@ let package = Package(
         ),
         .target(
             name: "OverviewFeature",
-            dependencies: ["Domain", "Application", "DesignSystem"]
+            dependencies: ["Domain", "Application", "DesignSystem", "PortfolioMath"]
         ),
         .target(
             name: "HoldingsFeature",
@@ -76,15 +79,18 @@ let package = Package(
         ),
         .testTarget(
             name: "ApplicationTests",
-            dependencies: ["Application", "Domain"]
+            dependencies: ["Application", "Domain", "DesignSystem"]
         ),
         .testTarget(
             name: "ImportingTests",
-            dependencies: ["Importing", "Domain", "Application"]
+            dependencies: ["Importing", "Domain", "Application"],
+            resources: [
+                .copy("Fixtures"),
+            ]
         ),
         .testTarget(
             name: "PersistenceTests",
-            dependencies: ["Persistence", "Domain", "Application"]
+            dependencies: ["Persistence", "Domain", "Application", "Importing"]
         ),
     ]
 )

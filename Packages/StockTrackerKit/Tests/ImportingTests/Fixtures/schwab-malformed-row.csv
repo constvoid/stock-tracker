@@ -1,0 +1,23 @@
+"Positions for All-Accounts as of 10:00 AM ET, 01/15/2026"
+
+"Joint_Taxable ...111"
+"Symbol","Description","Qty (Quantity)","Price","Gain $ (Gain/Loss $)","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain % (Gain/Loss %)","Asset Type",
+"AAAX","ALPHA FICTION CORP","10","100.00","$200.00","1.00","1.01%","$1,000.00","$10.00","1.01%","$800.00","25%","Equity",
+"BBBX","BETA SAMPLE INC","NOT_A_NUMBER","40.00","$10.00","0.20","0.50%","$100.00","$0.50","0.50%","$90.00","11.11%","Equity",
+"ETFX","EXAMPLE SECTOR ETF","5","50.00","$50.00","0.10","0.20%","$250.00","$0.50","0.20%","$200.00","25%","ETFs & Closed End Funds",
+"Cash & Cash Investments","--","--","--","--","--","--","$150.00","$0.00","0%","--","--","Cash and Money Market",
+"Positions Total","","--","--","$260.00","--","--","$1,500.00","$11.00","0.73%","$1,090.00","23.85%","--",
+
+
+"Cash_Only ...222"
+"Symbol","Description","Qty (Quantity)","Price","Gain $ (Gain/Loss $)","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain % (Gain/Loss %)","Asset Type",
+"Cash & Cash Investments","--","--","--","--","--","--","$500.00","$0.00","0%","--","--","Cash and Money Market",
+"Positions Total","","--","--","$0.00","--","--","$500.00","$0.00","0%","$0.00","0%","--",
+
+
+"Individual_Brokerage ...333"
+"Symbol","Description","Qty (Quantity)","Price","Gain $ (Gain/Loss $)","Price Chng $ (Price Change $)","Price Chng % (Price Change %)","Mkt Val (Market Value)","Day Chng $ (Day Change $)","Day Chng % (Day Change %)","Cost Basis","Gain % (Gain/Loss %)","Asset Type",
+"BRK/B","BERKSHIRE FICTION CLASS B","2","200.00","$100.00","2.00","1.01%","$400.00","$4.00","1.01%","$300.00","33.33%","Equity",
+"CCCX","GAMMA DEMO LTD","1.2500","80.00","-$25.00","-0.40","-0.50%","$100.00","-$0.50","-0.50%","$125.00","-20%","Equity",
+"Cash & Cash Investments","--","--","--","--","--","--","$50.00","$0.00","0%","--","--","Cash and Money Market",
+"Positions Total","","--","--","$75.00","--","--","$550.00","$3.50","0.64%","$425.00","17.65%","--",

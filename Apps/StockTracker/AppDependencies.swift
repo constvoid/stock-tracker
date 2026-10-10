@@ -1,27 +1,200 @@
 import Application
+import Domain
 import Foundation
+import Importing
+import Persistence
+import SwiftData
 
 /// Composition root. Constructed once and passed explicitly — no service locator.
-struct AppDependencies: Sendable {
+@MainActor
+final class AppDependencies {
     let portfolioRepository: any PortfolioRepository
     let brokerageImporting: any BrokerageImporting
-    let quoteProviding: any QuoteProviding
-    let intradayPriceProviding: any IntradayPriceProviding
-    let historicalPriceProviding: any HistoricalPriceProviding
+    let getOverview: GetPortfolioOverview
+    let getHoldings: GetPortfolioHoldings
+    let getAccountDetail: GetAccountDetail
+    let getSettings: GetSettingsAccounts
+    let previewImports: PreviewBrokerageImports
+    let commitImports: CommitAccountImports
+    let setVisibility: SetAccountVisibility
+    let resolveStale: ResolveStaleAccount
+
+    init(portfolioRepository: any PortfolioRepository, brokerageImporting: any BrokerageImporting) {
+        self.portfolioRepository = portfolioRepository
+        self.brokerageImporting = brokerageImporting
+        self.getOverview = GetPortfolioOverview(repository: portfolioRepository)
+        self.getHoldings = GetPortfolioHoldings(repository: portfolioRepository)
+        self.getAccountDetail = GetAccountDetail(repository: portfolioRepository)
+        self.getSettings = GetSettingsAccounts(repository: portfolioRepository)
+        self.previewImports = PreviewBrokerageImports(repository: portfolioRepository)
+        self.commitImports = CommitAccountImports(repository: portfolioRepository)
+        self.setVisibility = SetAccountVisibility(repository: portfolioRepository)
+        self.resolveStale = ResolveStaleAccount(repository: portfolioRepository)
+    }
+
+    static func makeLocal() throws -> AppDependencies {
+        let schema = Schema(versionedSchema: PortfolioSchemaV1.self)
+        let configuration = ModelConfiguration(
+            "StockTracker",
+            schema: schema,
+            isStoredInMemoryOnly: false
+        )
+        let container = try ModelContainer(
+            for: schema,
+            migrationPlan: PortfolioMigrationPlan.self,
+            configurations: [configuration]
+        )
+        return AppDependencies(
+            portfolioRepository: SwiftDataPortfolioRepository(modelContainer: container),
+            brokerageImporting: FileBrokerageImporting()
+        )
+    }
 
     static func makeDeterministicFakes() -> AppDependencies {
         AppDependencies(
-            portfolioRepository: FakePortfolioRepository(),
-            brokerageImporting: FakeBrokerageImporting(),
-            quoteProviding: FakeQuoteProviding(),
-            intradayPriceProviding: FakeIntradayPriceProviding(),
-            historicalPriceProviding: FakeHistoricalPriceProviding()
+            portfolioRepository: InMemoryPortfolioRepository(),
+            brokerageImporting: FileBrokerageImporting(
+                clock: { Date(timeIntervalSince1970: 1_700_000_000) }
+            )
         )
     }
 }
 
-private struct FakePortfolioRepository: PortfolioRepository {}
-private struct FakeBrokerageImporting: BrokerageImporting {}
-private struct FakeQuoteProviding: QuoteProviding {}
-private struct FakeIntradayPriceProviding: IntradayPriceProviding {}
-private struct FakeHistoricalPriceProviding: HistoricalPriceProviding {}
+/// Deterministic in-memory repository for previews/tests without SwiftData.
+actor InMemoryPortfolioRepository: PortfolioRepository {
+    private var accounts: [AccountID: BrokerageAccount] = [:]
+    private var brokerages: [BrokerageID: Brokerage] = [:]
+    private var quotes: [CanonicalSymbol: Quote] = [:]
+
+    func portfolioSnapshot() async throws -> PortfolioSnapshot {
+        PortfolioSnapshot(
+            brokerages: Array(brokerages.values),
+            accounts: Array(accounts.values)
+        )
+    }
+
+    func account(id: AccountID) async throws -> BrokerageAccount? {
+        accounts[id]
+    }
+
+    func account(sourceKey: SourceAccountKey) async throws -> BrokerageAccount? {
+        accounts.values.first { $0.sourceKey == sourceKey }
+    }
+
+    func replaceAccount(
+        _ snapshot: AccountReplacementSnapshot,
+        audit: ImportAuditMetadata
+    ) async throws -> AccountID {
+        let id = snapshot.accountID ?? AccountID()
+        let existing = accounts.values.first { $0.sourceKey == snapshot.sourceKey } ?? accounts[id]
+        let enabled = existing?.isEnabled ?? true
+        let override = existing?.displayNameOverride
+        let resolvedID = existing?.id ?? id
+        let slices = try snapshot.slices.map { slice in
+            try PositionSlice(
+                id: slice.id,
+                accountID: resolvedID,
+                nativeSymbol: slice.nativeSymbol,
+                canonicalSymbol: slice.canonicalSymbol,
+                securityName: slice.securityName,
+                securityKind: slice.securityKind,
+                quantity: slice.quantity,
+                unitCost: slice.unitCost,
+                acquiredAt: slice.acquiredAt,
+                basisKind: slice.basisKind,
+                provenance: slice.provenance
+            )
+        }
+        let account = BrokerageAccount(
+            id: resolvedID,
+            brokerageID: snapshot.brokerageID,
+            sourceKey: snapshot.sourceKey,
+            sourceDisplayName: snapshot.sourceDisplayName,
+            displayNameOverride: override,
+            kindHint: snapshot.kindHint,
+            cash: snapshot.cash,
+            isEnabled: enabled,
+            freshness: .current,
+            sourceAsOf: snapshot.sourceAsOf,
+            lastImportedAt: snapshot.lastImportedAt,
+            slices: slices
+        )
+        accounts[account.id] = account
+        brokerages[snapshot.brokerageID] = Brokerage(
+            id: snapshot.brokerageID,
+            displayName: snapshot.brokerageID.rawValue == "schwab" ? "Charles Schwab" : snapshot.brokerageID.rawValue,
+            lastCompleteImportAt: snapshot.lastImportedAt
+        )
+        for quote in snapshot.importedQuotes {
+            quotes[quote.canonicalSymbol] = quote
+        }
+        _ = audit
+        return account.id
+    }
+
+    func markMissingAccountsStale(
+        brokerageID: BrokerageID,
+        presentKeys: [SourceAccountKey],
+        asOf: Date
+    ) async throws -> [AccountID] {
+        let present = Set(presentKeys)
+        var marked: [AccountID] = []
+        for (id, account) in accounts where account.brokerageID == brokerageID {
+            if !present.contains(account.sourceKey) {
+                accounts[id] = BrokerageAccount(
+                    id: account.id,
+                    brokerageID: account.brokerageID,
+                    sourceKey: account.sourceKey,
+                    sourceDisplayName: account.sourceDisplayName,
+                    displayNameOverride: account.displayNameOverride,
+                    kindHint: account.kindHint,
+                    cash: account.cash,
+                    isEnabled: account.isEnabled,
+                    freshness: .stale(missingSince: asOf),
+                    sourceAsOf: account.sourceAsOf,
+                    lastImportedAt: account.lastImportedAt,
+                    slices: account.slices
+                )
+                marked.append(id)
+            }
+        }
+        return marked
+    }
+
+    func setAccountEnabled(id: AccountID, enabled: Bool) async throws {
+        guard let account = accounts[id] else { return }
+        accounts[id] = BrokerageAccount(
+            id: account.id,
+            brokerageID: account.brokerageID,
+            sourceKey: account.sourceKey,
+            sourceDisplayName: account.sourceDisplayName,
+            displayNameOverride: account.displayNameOverride,
+            kindHint: account.kindHint,
+            cash: account.cash,
+            isEnabled: enabled,
+            freshness: account.freshness,
+            sourceAsOf: account.sourceAsOf,
+            lastImportedAt: account.lastImportedAt,
+            slices: account.slices
+        )
+    }
+
+    func deleteStaleAccount(id: AccountID) async throws {
+        guard let account = accounts[id], case .stale = account.freshness else { return }
+        accounts[id] = nil
+    }
+
+    func cachedQuotes(symbols: [CanonicalSymbol]) async throws -> [CanonicalSymbol: Quote] {
+        var result: [CanonicalSymbol: Quote] = [:]
+        for symbol in symbols {
+            if let quote = quotes[symbol] { result[symbol] = quote }
+        }
+        return result
+    }
+
+    func saveQuotes(_ quotes: [Quote]) async throws {
+        for quote in quotes {
+            self.quotes[quote.canonicalSymbol] = quote
+        }
+    }
+}

@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phases 0–2
-complete. Next: Phase 3 persistence and import.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–4
+complete on branch `phase-3-persistence-import`. Next: Phase 5 live market data.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -54,21 +54,21 @@ SwiftData, files, network, or UI.
 
 ## Phase 3 — persistence and import
 
-- [ ] Implement versioned SwiftData records and `PortfolioRepository`
+- [x] Implement versioned SwiftData records and `PortfolioRepository`
   (`DATA-001`).
-- [ ] Implement account-level transactional wipe/replace that preserves
+- [x] Implement account-level transactional wipe/replace that preserves
   visibility/internal identity (`IMP-004`, `IMP-005`).
-- [ ] Implement content-based parser registry and brokerage-agnostic batch
+- [x] Implement content-based parser registry and brokerage-agnostic batch
   contract: one complete file per brokerage, multiple accounts per file
   (`IMP-001`, `IMP-002`).
-- [ ] Implement Schwab and E*TRADE parser adapters against anonymized fixtures.
-- [ ] Implement native/canonical/provider symbol mapping, including fabricated
+- [x] Implement Schwab and E*TRADE parser adapters against anonymized fixtures.
+- [x] Implement native/canonical/provider symbol mapping, including fabricated
   slash-symbol coverage (`IMP-007`).
-- [ ] Implement preview issues, reconciliation warnings, blocked-account
+- [x] Implement preview issues, reconciliation warnings, blocked-account
   errors, stale-account detection, and audit metadata (`IMP-005`, `IMP-006`).
-- [ ] Verify raw files are discarded and diagnostics are redacted (`IMP-008`,
+- [x] Verify raw files are discarded and diagnostics are redacted (`IMP-008`,
   `QUAL-002`).
-- [ ] Test idempotent re-import, partial account success, malformed row
+- [x] Test idempotent re-import, partial account success, malformed row
   preserving prior data, hidden-state preservation, cash-only accounts, and
   missing-account stale behavior.
 
@@ -77,16 +77,16 @@ temporary store and re-import without duplication/data loss.
 
 ## Phase 4 — local-data iPhone experience
 
-- [ ] Implement three-tab shell: Overview, Holdings, Settings (`UI-001`).
-- [ ] Implement Settings/Import file selection, preview, confirmation, result,
+- [x] Implement three-tab shell: Overview, Holdings, Settings (`UI-001`).
+- [x] Implement Settings/Import file selection, preview, confirmation, result,
   account visibility, and stale resolution (`UI-005`).
-- [ ] Implement Overview headline, Movers, and brokerage/account breakdown
+- [x] Implement Overview headline, Movers, and brokerage/account breakdown
   using imported fallback prices (`UI-002`, `UI-003`).
-- [ ] Implement aggregated portfolio Holdings and Account Detail, including
+- [x] Implement aggregated portfolio Holdings and Account Detail, including
   average cost and cash-only state (`UI-004`).
-- [ ] Apply semantic design tokens, Dynamic Type, VoiceOver, dark mode, and
+- [x] Apply semantic design tokens, Dynamic Type, VoiceOver, dark mode, and
   non-color gain/loss indicators (`UI-007`).
-- [ ] Add previews/UI tests backed only by fake read models.
+- [x] Add previews/UI tests backed only by fake read models.
 
 **Exit:** user imports fabricated files and navigates correct totals, holdings,
 accounts, visibility, and import issues without live network data.

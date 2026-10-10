@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phases 0–5
-in progress on branch `phase-3-persistence-import`.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–6
+complete on branch `phase-3-persistence-import`. Next: Phase 7 car glance.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -106,13 +106,13 @@ clearly qualify the latest known values.
 
 ## Phase 6 — reconstructed history
 
-- [ ] Implement five-minute intraday and daily history adapters (`HIST-001`).
-- [ ] Implement D/W/M/YTD/1Y/3Y/5Y range mapping and cache policy.
-- [ ] Implement reconstructed series using acquisition dates, estimated
+- [x] Implement five-minute intraday and daily history adapters (`HIST-001`).
+- [x] Implement D/W/M/YTD/1Y/3Y/5Y range mapping and cache policy.
+- [x] Implement reconstructed series using acquisition dates, estimated
   full-range unknown-date slices, and flat cash (`HIST-002`, `HIST-003`).
-- [ ] Implement Overview and Account charts with scrub accessibility and
+- [x] Implement Overview and Account charts with scrub accessibility and
   reconstructed/estimated disclosure.
-- [ ] Decide and add to `SPEC.md`: missing historical bar carry-forward versus
+- [x] Decide and add to `SPEC.md`: missing historical bar carry-forward versus
   chart gap.
 
 **Exit:** all ranges render deterministic series and visibly distinguish

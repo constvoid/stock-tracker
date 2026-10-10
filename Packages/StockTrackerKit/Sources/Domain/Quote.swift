@@ -70,4 +70,28 @@ public enum TimeRange: String, Hashable, Sendable, Codable, CaseIterable {
     case oneYear
     case threeYears
     case fiveYears
+
+    public var shortTitle: String {
+        switch self {
+        case .day: "D"
+        case .week: "W"
+        case .month: "M"
+        case .ytd: "YTD"
+        case .oneYear: "1Y"
+        case .threeYears: "3Y"
+        case .fiveYears: "5Y"
+        }
+    }
+
+    public var accessibilityTitle: String {
+        switch self {
+        case .day: "Day"
+        case .week: "Week"
+        case .month: "Month"
+        case .ytd: "Year to date"
+        case .oneYear: "One year"
+        case .threeYears: "Three years"
+        case .fiveYears: "Five years"
+        }
+    }
 }

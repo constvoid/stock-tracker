@@ -1,24 +1,27 @@
 # Handoff — pick up here
 
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
-**Branch:** `phase-3-persistence-import` (Phases 3–4 work; uncommitted unless
-committed in a later session)  
-**Status:** Phases 0–5 complete. Live Yahoo-style quotes with extended hours,
-pull-to-refresh + foreground refresh, stale-on-failure. Next: Phase 6 history.  
+**Branch:** `phase-3-persistence-import`  
+**Status:** Phases 0–6 complete. Live quotes (extended hours), reconstructed
+history charts with HIST-005 gap rules. `swift test`: 35. Next: Phase 7 car
+glance.  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) — start Phase 6 (reconstructed history).
-3. Use focused docs: [architecture.md](architecture.md), [ui-design.md](ui-design.md).
+2. Read [TODO.md](TODO.md) — start Phase 7 (iPhone car glance).
+3. Use focused docs: [architecture.md](architecture.md), [ui-design.md](ui-design.md),
+   [carplay.md](carplay.md).
 
-## Implemented through Phase 5
+## Implemented through Phase 6
 
-- Phases 3–4 import/persistence/UI.
-- `YahooStyleQuoteProvider` (extended hours on), `FakeQuoteProvider`, symbol aliases.
-- `RefreshMarketData` with cache/stale behavior; holdings never cleared on failure.
-- Overview/Holdings refresh on pull and foreground activation (`MKT-003`).
+- Phases 3–5 import, UI, Yahoo-style quotes with extended hours.
+- Intraday (5m) + daily history providers; bar cache in SwiftData.
+- `HistoryReconstruction` + `GetHistoricalValue` for portfolio/account scopes.
+- Overview and Account Detail charts with range picker, scrub, reconstructed /
+  estimated disclosure.
+- Missing bars: carry across non-sessions; gap on missing trading days (`HIST-005`).
 
 ## Build notes
 
@@ -32,9 +35,8 @@ xcodebuild -project StockTracker.xcodeproj -scheme StockTracker \
 
 ## What happens next
 
-1. Phase 5: Yahoo-style quotes, previous close / Movers, pull-to-refresh,
-   cache freshness; network failure must not alter holdings.
-2. Do not start reconstructed history (Phase 6) until Phase 5 exit criteria pass.
+1. Phase 7: large-type iPhone car-glance surface from shared overview use case.
+2. Do not block on CarPlay entitlement.
 
 ## Session rules
 

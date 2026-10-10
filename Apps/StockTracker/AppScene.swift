@@ -19,7 +19,8 @@ struct AppScene: View {
         _overviewModel = State(
             initialValue: OverviewViewModel(
                 getOverview: dependencies.getOverview,
-                refreshMarketData: dependencies.refreshMarketData
+                refreshMarketData: dependencies.refreshMarketData,
+                getHistoricalValue: dependencies.getHistoricalValue
             )
         )
         _holdingsModel = State(
@@ -62,7 +63,8 @@ struct AppScene: View {
                 AccountDetailRootView(
                     viewModel: AccountDetailViewModel(
                         accountID: accountID,
-                        getAccountDetail: dependencies.getAccountDetail
+                        getAccountDetail: dependencies.getAccountDetail,
+                        getHistoricalValue: dependencies.getHistoricalValue
                     )
                 )
                 .toolbar {

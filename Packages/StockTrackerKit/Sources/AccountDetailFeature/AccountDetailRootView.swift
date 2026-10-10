@@ -59,11 +59,24 @@ public struct AccountDetailRootView: View {
             }
 
             Section("Performance") {
-                Text(model.capabilities.history == .reconstructed ? "Reconstructed" : "Estimated")
-                    .font(PortfolioTypography.secondary)
-                Text("Account chart arrives with historical market data.")
-                    .font(PortfolioTypography.caption)
-                    .foregroundStyle(.secondary)
+                PerformanceChartView(
+                    points: viewModel.chartPoints,
+                    selectedRangeTitle: viewModel.selectedRange.accessibilityTitle,
+                    rangeTitles: TimeRange.allCases.map {
+                        ($0.rawValue, $0.shortTitle, $0.accessibilityTitle)
+                    },
+                    selectedRangeID: viewModel.selectedRange.rawValue,
+                    qualityLabel: (viewModel.series?.quality ?? model.capabilities.history) == .reconstructed
+                        ? "Reconstructed"
+                        : "Estimated",
+                    disclosure: viewModel.series?.disclosure
+                        ?? "Reconstructed from this account's holdings and historical prices.",
+                    qualityIsWarning: (viewModel.series?.quality ?? model.capabilities.history)
+                        == .estimatedUnknownAcquisitionDates,
+                    onSelectRangeID: { id in
+                        Task { await viewModel.selectRangeID(id) }
+                    }
+                )
             }
 
             Section("Positions") {

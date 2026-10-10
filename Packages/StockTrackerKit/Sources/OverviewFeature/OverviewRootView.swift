@@ -81,20 +81,23 @@ public struct OverviewRootView: View {
             }
 
             Section("Performance") {
-                VStack(alignment: .leading, spacing: PortfolioSpacing.sm) {
-                    Text(model.historyQuality == .reconstructed ? "Reconstructed" : "Estimated")
-                        .font(PortfolioTypography.secondary)
-                        .foregroundStyle(.secondary)
-                    Text("Historical chart arrives in a later phase. Current total uses imported prices.")
-                        .font(PortfolioTypography.caption)
-                        .foregroundStyle(.secondary)
-                    if let disclosure = model.disclosure {
-                        Text(disclosure)
-                            .font(PortfolioTypography.caption)
-                            .foregroundStyle(PortfolioColor.warning)
+                PerformanceChartView(
+                    points: viewModel.chartPoints,
+                    selectedRangeTitle: viewModel.selectedRange.accessibilityTitle,
+                    rangeTitles: TimeRangeUI.pickerOptions,
+                    selectedRangeID: viewModel.selectedRange.rawValue,
+                    qualityLabel: (viewModel.series?.quality ?? model.historyQuality) == .reconstructed
+                        ? "Reconstructed"
+                        : "Estimated",
+                    disclosure: viewModel.series?.disclosure
+                        ?? model.disclosure
+                        ?? "Reconstructed from current holdings and historical prices.",
+                    qualityIsWarning: (viewModel.series?.quality ?? model.historyQuality)
+                        == .estimatedUnknownAcquisitionDates,
+                    onSelectRangeID: { id in
+                        Task { await viewModel.selectRangeID(id) }
                     }
-                }
-                .accessibilityElement(children: .combine)
+                )
             }
 
             Section("Movers") {

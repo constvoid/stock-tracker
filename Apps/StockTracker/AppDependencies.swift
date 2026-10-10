@@ -21,11 +21,14 @@ final class AppDependencies {
     let setVisibility: SetAccountVisibility
     let resolveStale: ResolveStaleAccount
     let refreshMarketData: RefreshMarketData
+    let getHistoricalValue: GetHistoricalValue
 
     init(
         portfolioRepository: any PortfolioRepository,
         brokerageImporting: any BrokerageImporting,
-        quoteProviding: any QuoteProviding
+        quoteProviding: any QuoteProviding,
+        intraday: any IntradayPriceProviding,
+        daily: any HistoricalPriceProviding
     ) {
         self.portfolioRepository = portfolioRepository
         self.brokerageImporting = brokerageImporting
@@ -41,6 +44,11 @@ final class AppDependencies {
         self.refreshMarketData = RefreshMarketData(
             repository: portfolioRepository,
             quoteProvider: quoteProviding
+        )
+        self.getHistoricalValue = GetHistoricalValue(
+            repository: portfolioRepository,
+            intraday: intraday,
+            daily: daily
         )
     }
 
@@ -59,7 +67,9 @@ final class AppDependencies {
         return AppDependencies(
             portfolioRepository: SwiftDataPortfolioRepository(modelContainer: container),
             brokerageImporting: FileBrokerageImporting(),
-            quoteProviding: YahooStyleQuoteProvider(includeExtendedHours: true)
+            quoteProviding: YahooStyleQuoteProvider(includeExtendedHours: true),
+            intraday: YahooStyleIntradayProvider(includeExtendedHours: true),
+            daily: YahooStyleHistoricalProvider()
         )
     }
 
@@ -69,7 +79,9 @@ final class AppDependencies {
             brokerageImporting: FileBrokerageImporting(
                 clock: { Date(timeIntervalSince1970: 1_700_000_000) }
             ),
-            quoteProviding: FakeQuoteProvider(shouldFail: true)
+            quoteProviding: FakeQuoteProvider(shouldFail: true),
+            intraday: FakeIntradayProvider(),
+            daily: FakeHistoricalProvider()
         )
     }
 }

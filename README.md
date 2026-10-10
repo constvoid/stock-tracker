@@ -9,9 +9,9 @@ Continue from [docs/HANDOFF.md](docs/HANDOFF.md). Full design index:
 
 ## Status
 
-Phases 0–4 complete on `phase-3-persistence-import`: import/persistence plus
-Overview, Holdings, Settings/Import UI on imported prices. Next: Phase 5
-live market data.
+Phases 0–6 complete on `phase-3-persistence-import`: import, UI, live quotes
+(with extended hours), and reconstructed history charts. Next: Phase 7 car
+glance.
 
 ## Build
 

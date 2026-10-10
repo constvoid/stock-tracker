@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phases 0–1
-complete. Next: Phase 2 Domain and PortfolioMath.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–2
+complete. Next: Phase 3 persistence and import.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -38,15 +38,15 @@ safe to commit.
 
 ## Phase 2 — Domain and PortfolioMath
 
-- [ ] Implement decimal value/identity types and validation (`PROD-003`,
+- [x] Implement decimal value/identity types and validation (`PROD-003`,
   `DATA-002`).
-- [ ] Implement Brokerage, BrokerageAccount, PositionSlice, provenance,
+- [x] Implement Brokerage, BrokerageAccount, PositionSlice, provenance,
   visibility/stale state, and capability derivation (`ACCT-*`, `IMP-003`).
-- [ ] Implement weighted average cost, cash/equity/account/portfolio rollups,
+- [x] Implement weighted average cost, cash/equity/account/portfolio rollups,
   and duplicate-symbol aggregation (`CALC-001` through `CALC-003`).
-- [ ] Implement tax-term capability: one unknown date disables the account
+- [x] Implement tax-term capability: one unknown date disables the account
   section (`CALC-004`).
-- [ ] Unit-test fractional quantities, multiple slices, cash-only accounts,
+- [x] Unit-test fractional quantities, multiple slices, cash-only accounts,
   hidden accounts, and duplicate symbols with fabricated values.
 
 **Exit:** pure Domain/PortfolioMath tests prove all core calculations without

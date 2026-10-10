@@ -2,52 +2,28 @@
 
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
 **Branch:** `main` tracking `origin/main`  
-**Status:** Phases 0–1 complete. Empty iOS app and `StockTrackerKit` modules
-build; package unit tests pass. Next is Phase 2 (Domain + PortfolioMath).  
+**Status:** Phases 0–2 complete. Domain + PortfolioMath unit tests pass (13).
+Next is Phase 3 (SwiftData persistence and brokerage-file import).  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) for the ordered delivery plan — start Phase 2.
-3. Use the focused documents only as needed:
-   - [architecture.md](architecture.md)
-   - [import-design.md](import-design.md)
-   - [domain-and-data.md](domain-and-data.md)
-   - [ui-design.md](ui-design.md)
-   - [carplay.md](carplay.md)
+2. Read [TODO.md](TODO.md) for the ordered delivery plan — start Phase 3.
+3. Use focused docs as needed: [architecture.md](architecture.md),
+   [import-design.md](import-design.md), [domain-and-data.md](domain-and-data.md).
 4. Reconcile any requested change in `SPEC.md` first, then design, TODO, code,
-   and tests. Do not treat chat history as the source of truth.
+   and tests.
 
-## Current design baseline
+## Implemented so far
 
-- iPhone-first, iOS 18+, local-only SwiftData.
-- Read-only US stocks/ETFs plus per-account cash; no trading.
-- One complete file per brokerage; each parser yields multiple accounts through
-  a brokerage-agnostic contract.
-- Initial adapters: Schwab and E*TRADE.
-- Hybrid `PositionSlice`: exact acquisition rows or aggregate unknown-date
-  positions.
-- Account-level wipe/replace with warnings allowed and errors blocking that
-  account; valid sibling accounts may commit.
-- All accounts stored; enabled/hidden controls portfolio participation.
-- Missing account from next complete brokerage file is retained as stale.
-- Weighted average cost uses imported unit cost; rounding differences warn.
-- Portfolio-wide duplicate symbols aggregate.
-- Unknown acquisition dates hide account tax-term reporting and make charts
-  estimated across the full selected range.
-- Yahoo-style market data behind replaceable protocols.
-- Tabs: Overview, Holdings, Settings/Import.
-- Overview includes totals, chart, Movers, and brokerage/account breakdown.
-- iPhone car glance first; true CarPlay templates later if entitlement allows.
-
-## Repo layout (implemented)
-
-- `StockTracker.xcodeproj` via `project.yml` (XcodeGen).
-- `Apps/StockTracker/` composition root (`AppDependencies`, three-tab shell).
-- `Packages/StockTrackerKit/` multi-target package (no CarPlay target yet).
-- `Fixtures/Anonymized/` fabricated Schwab/E*TRADE CSVs for tests.
-- `data/import/` and `data/sampleui/` remain local-only and gitignored.
+- Privacy gitignore; fabricated fixtures in `Fixtures/Anonymized/`.
+- `StockTracker.xcodeproj` (XcodeGen) + three-tab app shell + `AppDependencies`
+  fakes.
+- `StockTrackerKit` modules with dependency rules; no CarPlay target.
+- Domain: Money/Quantity/UnitCost, identities, hybrid `PositionSlice`, accounts.
+- PortfolioMath: WAC, account/portfolio rollups, duplicate-symbol aggregation,
+  tax-term/history capability derivation.
 
 ## Build notes
 
@@ -61,9 +37,9 @@ xcodebuild -project StockTracker.xcodeproj -scheme StockTracker \
 
 ## What happens next
 
-1. Phase 2: Domain value types and PortfolioMath calculations with fabricated
-   unit tests (`PROD-003`, `DATA-002`, `CALC-*`, `ACCT-*`).
-2. Do not start Phase 3 persistence/import until Phase 2 exit criteria pass.
+1. Phase 3: versioned SwiftData, account-level wipe/replace, Schwab/E*TRADE
+   parsers against anonymized fixtures, stale detection, redacted diagnostics.
+2. Do not start Phase 4 UI until Phase 3 exit criteria pass.
 
 ## Session rules
 

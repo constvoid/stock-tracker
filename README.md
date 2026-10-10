@@ -9,8 +9,8 @@ Continue from [docs/HANDOFF.md](docs/HANDOFF.md). Full design index:
 
 ## Status
 
-Phases 0–1 complete: privacy gate, anonymized fixtures, Xcode app shell, and
-`StockTrackerKit` module scaffold. Next: Domain and PortfolioMath (Phase 2).
+Phases 0–2 complete: privacy gate, anonymized fixtures, app shell, Domain, and
+PortfolioMath. Next: persistence and import (Phase 3).
 
 ## Build
 

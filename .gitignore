@@ -8,6 +8,9 @@ data/sampleui/
 # Xcode / Swift
 DerivedData/
 build/
+.swiftpm/
+**/Packages/**/.build/
+Packages/StockTrackerKit/.build/
 *.xcuserstate
 *.xccheckout
 *.xcscmblueprint

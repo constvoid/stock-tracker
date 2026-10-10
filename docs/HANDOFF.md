@@ -2,14 +2,14 @@
 
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
 **Branch:** `main` tracking `origin/main`  
-**Status:** Specification and design approved. Phase 0 privacy/fixtures in
-progress; no Swift/Xcode app yet until Phase 1 scaffold.  
+**Status:** Phases 0–1 complete. Empty iOS app and `StockTrackerKit` modules
+build; package unit tests pass. Next is Phase 2 (Domain + PortfolioMath).  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) for the ordered delivery plan.
+2. Read [TODO.md](TODO.md) for the ordered delivery plan — start Phase 2.
 3. Use the focused documents only as needed:
    - [architecture.md](architecture.md)
    - [import-design.md](import-design.md)
@@ -41,23 +41,29 @@ progress; no Swift/Xcode app yet until Phase 1 scaffold.
 - Overview includes totals, chart, Movers, and brokerage/account breakdown.
 - iPhone car glance first; true CarPlay templates later if entitlement allows.
 
-## Supplied planning inputs
+## Repo layout (implemented)
 
-- `data/import/`: one Schwab sample with three accounts (one cash-only) and one
-  E*TRADE sample currently containing one account.
-- `data/sampleui/`: six SigFig reference images showing hierarchy for
-  performance, Movers, account breakdown, and holdings.
+- `StockTracker.xcodeproj` via `project.yml` (XcodeGen).
+- `Apps/StockTracker/` composition root (`AppDependencies`, three-tab shell).
+- `Packages/StockTrackerKit/` multi-target package (no CarPlay target yet).
+- `Fixtures/Anonymized/` fabricated Schwab/E*TRADE CSVs for tests.
+- `data/import/` and `data/sampleui/` remain local-only and gitignored.
 
-These files contain private financial information. They are local reference
-only and are gitignored. Fabricated fixtures under `Fixtures/Anonymized/` are
-required for tests.
+## Build notes
+
+```bash
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+xcodegen generate
+xcodebuild -project StockTracker.xcodeproj -scheme StockTracker \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+(cd Packages/StockTrackerKit && swift test)
+```
 
 ## What happens next
 
-1. Finish Phase 0: fabricated Schwab/E*TRADE fixtures committed safely.
-2. Start Phase 1: Xcode project and `StockTrackerKit` module scaffold.
-3. Continue through [TODO.md](TODO.md) phases without skipping privacy or
-   module-boundary gates.
+1. Phase 2: Domain value types and PortfolioMath calculations with fabricated
+   unit tests (`PROD-003`, `DATA-002`, `CALC-*`, `ACCT-*`).
+2. Do not start Phase 3 persistence/import until Phase 2 exit criteria pass.
 
 ## Session rules
 

@@ -1,0 +1,66 @@
+name: StockTracker
+options:
+  bundleIdPrefix: com.local.stocktracker
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
+packages:
+  StockTrackerKit:
+    path: Packages/StockTrackerKit
+targets:
+  StockTracker:
+    type: application
+    platform: iOS
+    sources:
+      - path: Apps/StockTracker
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.stocktracker.app
+        PRODUCT_NAME: StockTracker
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Stock Tracker
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        CURRENT_PROJECT_VERSION: 1
+        MARKETING_VERSION: 0.1.0
+    dependencies:
+      - package: StockTrackerKit
+        product: Domain
+      - package: StockTrackerKit
+        product: PortfolioMath
+      - package: StockTrackerKit
+        product: Application
+      - package: StockTrackerKit
+        product: Importing
+      - package: StockTrackerKit
+        product: Persistence
+      - package: StockTrackerKit
+        product: MarketData
+      - package: StockTrackerKit
+        product: DesignSystem
+      - package: StockTrackerKit
+        product: OverviewFeature
+      - package: StockTrackerKit
+        product: HoldingsFeature
+      - package: StockTrackerKit
+        product: AccountDetailFeature
+      - package: StockTrackerKit
+        product: ImportSettingsFeature
+      - package: StockTrackerKit
+        product: CarGlanceFeature
+schemes:
+  StockTracker:
+    build:
+      targets:
+        StockTracker: all
+    test:
+      targets: []
+    run:
+      config: Debug

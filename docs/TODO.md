@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phase 0
-privacy/fixtures next; no app code until Phase 1.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–1
+complete. Next: Phase 2 Domain and PortfolioMath.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -14,25 +14,25 @@ the specification first and reconcile this file before implementation.
 - [x] Add ignore rules for `.DS_Store`, `data/import/`, and `data/sampleui/`
   **before any commit**; verify real financial files are absent from git history
   (`IMP-009`, `QUAL-002`).
-- [ ] Create fabricated Schwab/E*TRADE fixtures that preserve schema and edge
+- [x] Create fabricated Schwab/E*TRADE fixtures that preserve schema and edge
   cases but contain no real names, account suffixes, symbols, quantities, or
   values (`IMP-009`).
-- [ ] Commit approved planning documents only if Krishna requests it.
+- [x] Commit approved planning documents only if Krishna requests it.
 
 **Exit:** approved design, sensitive local files ignored, and test fixtures are
 safe to commit.
 
 ## Phase 1 — project and module scaffold
 
-- [ ] Create `StockTracker.xcodeproj`, iOS 18+ app target, and local
+- [x] Create `StockTracker.xcodeproj`, iOS 18+ app target, and local
   `StockTrackerKit` Swift package (`PROD-001`, `QUAL-001`).
-- [ ] Add Domain, PortfolioMath, Application, Importing, Persistence,
+- [x] Add Domain, PortfolioMath, Application, Importing, Persistence,
   MarketData, DesignSystem, OverviewFeature, HoldingsFeature,
   AccountDetailFeature, ImportSettingsFeature, and CarGlanceFeature targets.
-- [ ] Encode dependency rules from [architecture.md](architecture.md); add no
+- [x] Encode dependency rules from [architecture.md](architecture.md); add no
   CarPlay target yet.
-- [ ] Build the empty app and run empty unit-test targets in CI/local Xcode.
-- [ ] Create `AppDependencies` composition root with deterministic fake ports.
+- [x] Build the empty app and run empty unit-test targets in CI/local Xcode.
+- [x] Create `AppDependencies` composition root with deterministic fake ports.
 
 **Exit:** clean build/tests with enforceable module boundaries and no real data.
 

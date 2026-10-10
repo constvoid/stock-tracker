@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Private planning inputs (real brokerage exports and UI references)
+data/import/
+data/sampleui/
+
+# Xcode / Swift
+DerivedData/
+build/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+xcuserdata/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.swiftpm/config/registries.json
+.swiftpm/xcode/package.xcworkspace/
+.netrc
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*~
+
+# Misc
+*.log
+.python-version

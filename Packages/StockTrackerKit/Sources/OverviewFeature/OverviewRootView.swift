@@ -38,8 +38,8 @@ public struct OverviewRootView: View {
                 }
             }
             .navigationTitle("Overview")
-            .task { await viewModel.load() }
-            .refreshable { await viewModel.load() }
+            .task { await viewModel.load(refreshQuotes: true) }
+            .refreshable { await viewModel.refresh() }
         }
         .accessibilityIdentifier("overview.root")
     }
@@ -47,6 +47,14 @@ public struct OverviewRootView: View {
     @ViewBuilder
     private func loadedContent(_ model: PortfolioOverviewReadModel) -> some View {
         List {
+            if let banner = viewModel.refreshBanner {
+                Section {
+                    Text(banner)
+                        .font(PortfolioTypography.caption)
+                        .foregroundStyle(PortfolioColor.warning)
+                        .accessibilityLabel(banner)
+                }
+            }
             Section {
                 VStack(alignment: .leading, spacing: PortfolioSpacing.sm) {
                     Text("Portfolio Value")
@@ -177,9 +185,14 @@ public struct OverviewRootView: View {
         case .stale: base = "Stale prices"
         case .unavailable: base = "No price data"
         }
+        var text = base
         if let asOf = model.asOf {
-            return "\(base) · as of \(asOf.formatted(date: .abbreviated, time: .shortened))"
+            text += " · as of \(asOf.formatted(date: .abbreviated, time: .shortened))"
         }
-        return base
+        if model.freshness == .fresh || model.freshness == .stale {
+            // Extended-hours inclusion is a provider policy; surface when not regular-only.
+            text += " · includes extended hours when available"
+        }
+        return text
     }
 }

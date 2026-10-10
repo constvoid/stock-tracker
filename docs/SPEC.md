@@ -310,15 +310,18 @@ E*TRADE account may show it.
 **State:** Confirmed  
 **Requirement:** Quotes, intraday bars, and daily history are protocols.
 Initial implementation uses a free Yahoo-style provider and may be replaced
-without changing use cases or UI.
+without changing use cases or UI. Quote prices may use extended-hours
+(pre/post) when the provider supplies them; previous close remains the prior
+regular-session close for day's change.
 
-**Acceptance:** Tests run with deterministic fake providers.
+**Acceptance:** Tests run with deterministic fake providers. Extended-hours
+last price is preferred over the regular print when both are present.
 
 **Traces:** `architecture.md`; `domain-and-data.md`
 
 ### MKT-002 — Quote failure
 
-**State:** Proposed  
+**State:** Confirmed  
 **Requirement:** Quote/network failure never deletes holdings. The app displays
 the most recent cached/imported price with source and as-of metadata and marks
 it stale.
@@ -326,6 +329,31 @@ it stale.
 **Acceptance:** Offline launch renders stored accounts and clearly stale values.
 
 **Traces:** `domain-and-data.md`; `ui-design.md`
+
+### MKT-003 — Quote refresh policy
+
+**State:** Confirmed  
+**Requirement:** v1 refreshes quotes on pull-to-refresh and when the app
+becomes active in the foreground. No opportunistic or scheduled background
+refresh is required.
+
+**Acceptance:** Pull-to-refresh and foreground activation request provider
+quotes; holdings remain intact if the request fails.
+
+**Traces:** `ui-design.md`; `TODO.md`
+
+### MKT-004 — Quote precedence
+
+**State:** Confirmed  
+**Requirement:** Prefer a newer market-provider quote over cached provider
+quotes, then imported broker fallback prices. Imported unit prices never alter
+quantity or cost basis.
+
+**Acceptance:** After a successful refresh, Overview/Holdings/Account Detail
+show provider prices; after failure they show the prior cached/imported values
+as stale.
+
+**Traces:** `import-design.md`; `domain-and-data.md`
 
 ### HIST-001 — Supported ranges
 
@@ -360,6 +388,19 @@ charts `Estimated`.
 estimate disclosure.
 
 **Traces:** `domain-and-data.md`; PortfolioMath tests
+
+### HIST-005 — Missing historical bars
+
+**State:** Confirmed  
+**Requirement:** When reconstructing series, carry the last known close across
+calendar gaps that are not expected trading sessions (weekends and US market
+holidays). When an expected trading session has no provider bar, leave a chart
+gap (do not invent a price).
+
+**Acceptance:** Weekend gaps are continuous; a missing weekday bar produces a
+discontinuity in the series points.
+
+**Traces:** `domain-and-data.md`; `open-questions.md`; PortfolioMath tests
 
 ### HIST-004 — Snapshot evolution
 

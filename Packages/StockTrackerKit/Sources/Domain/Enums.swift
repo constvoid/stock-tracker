@@ -56,6 +56,12 @@ public enum QuoteFreshness: String, Hashable, Sendable, Codable {
     case stale
 }
 
+public enum MarketSession: String, Hashable, Sendable, Codable {
+    case pre
+    case regular
+    case post
+}
+
 public enum PriceBarInterval: String, Hashable, Sendable, Codable {
     case fiveMinute
     case daily

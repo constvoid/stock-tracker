@@ -16,6 +16,13 @@ public protocol PortfolioRepository: Sendable {
     func deleteStaleAccount(id: AccountID) async throws
     func cachedQuotes(symbols: [CanonicalSymbol]) async throws -> [CanonicalSymbol: Quote]
     func saveQuotes(_ quotes: [Quote]) async throws
+    func cachedBars(
+        symbols: [CanonicalSymbol],
+        interval: PriceBarInterval,
+        from: Date,
+        to: Date
+    ) async throws -> [CanonicalSymbol: [PriceBar]]
+    func saveBars(_ bars: [PriceBar]) async throws
 }
 
 /// Brokerage file import port. Concrete CSV adapters live in Importing.
@@ -24,10 +31,26 @@ public protocol BrokerageImporting: Sendable {
 }
 
 /// Latest quote port. Concrete Yahoo-style adapter lives in MarketData.
-public protocol QuoteProviding: Sendable {}
+public protocol QuoteProviding: Sendable {
+    func quotes(for symbols: [CanonicalSymbol]) async throws -> [CanonicalSymbol: Quote]
+}
 
 /// Five-minute intraday history port.
-public protocol IntradayPriceProviding: Sendable {}
+public protocol IntradayPriceProviding: Sendable {
+    func bars(for symbols: [CanonicalSymbol], day: Date) async throws -> [CanonicalSymbol: [PriceBar]]
+}
 
 /// Daily historical close port.
-public protocol HistoricalPriceProviding: Sendable {}
+public protocol HistoricalPriceProviding: Sendable {
+    func dailyBars(
+        for symbols: [CanonicalSymbol],
+        range: TimeRange
+    ) async throws -> [CanonicalSymbol: [PriceBar]]
+}
+
+public enum MarketDataError: Error, Equatable, Sendable {
+    case networkFailure
+    case decodingFailure
+    case emptyResponse
+    case symbolUnavailable(String)
+}

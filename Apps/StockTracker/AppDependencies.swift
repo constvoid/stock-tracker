@@ -2,6 +2,7 @@ import Application
 import Domain
 import Foundation
 import Importing
+import MarketData
 import Persistence
 import SwiftData
 
@@ -10,6 +11,7 @@ import SwiftData
 final class AppDependencies {
     let portfolioRepository: any PortfolioRepository
     let brokerageImporting: any BrokerageImporting
+    let quoteProviding: any QuoteProviding
     let getOverview: GetPortfolioOverview
     let getHoldings: GetPortfolioHoldings
     let getAccountDetail: GetAccountDetail
@@ -18,10 +20,16 @@ final class AppDependencies {
     let commitImports: CommitAccountImports
     let setVisibility: SetAccountVisibility
     let resolveStale: ResolveStaleAccount
+    let refreshMarketData: RefreshMarketData
 
-    init(portfolioRepository: any PortfolioRepository, brokerageImporting: any BrokerageImporting) {
+    init(
+        portfolioRepository: any PortfolioRepository,
+        brokerageImporting: any BrokerageImporting,
+        quoteProviding: any QuoteProviding
+    ) {
         self.portfolioRepository = portfolioRepository
         self.brokerageImporting = brokerageImporting
+        self.quoteProviding = quoteProviding
         self.getOverview = GetPortfolioOverview(repository: portfolioRepository)
         self.getHoldings = GetPortfolioHoldings(repository: portfolioRepository)
         self.getAccountDetail = GetAccountDetail(repository: portfolioRepository)
@@ -30,6 +38,10 @@ final class AppDependencies {
         self.commitImports = CommitAccountImports(repository: portfolioRepository)
         self.setVisibility = SetAccountVisibility(repository: portfolioRepository)
         self.resolveStale = ResolveStaleAccount(repository: portfolioRepository)
+        self.refreshMarketData = RefreshMarketData(
+            repository: portfolioRepository,
+            quoteProvider: quoteProviding
+        )
     }
 
     static func makeLocal() throws -> AppDependencies {
@@ -46,7 +58,8 @@ final class AppDependencies {
         )
         return AppDependencies(
             portfolioRepository: SwiftDataPortfolioRepository(modelContainer: container),
-            brokerageImporting: FileBrokerageImporting()
+            brokerageImporting: FileBrokerageImporting(),
+            quoteProviding: YahooStyleQuoteProvider(includeExtendedHours: true)
         )
     }
 
@@ -55,7 +68,8 @@ final class AppDependencies {
             portfolioRepository: InMemoryPortfolioRepository(),
             brokerageImporting: FileBrokerageImporting(
                 clock: { Date(timeIntervalSince1970: 1_700_000_000) }
-            )
+            ),
+            quoteProviding: FakeQuoteProvider(shouldFail: true)
         )
     }
 }
@@ -65,6 +79,7 @@ actor InMemoryPortfolioRepository: PortfolioRepository {
     private var accounts: [AccountID: BrokerageAccount] = [:]
     private var brokerages: [BrokerageID: Brokerage] = [:]
     private var quotes: [CanonicalSymbol: Quote] = [:]
+    private var bars: [PriceBar] = []
 
     func portfolioSnapshot() async throws -> PortfolioSnapshot {
         PortfolioSnapshot(
@@ -196,5 +211,26 @@ actor InMemoryPortfolioRepository: PortfolioRepository {
         for quote in quotes {
             self.quotes[quote.canonicalSymbol] = quote
         }
+    }
+
+    func cachedBars(
+        symbols: [CanonicalSymbol],
+        interval: PriceBarInterval,
+        from: Date,
+        to: Date
+    ) async throws -> [CanonicalSymbol: [PriceBar]] {
+        let keys = Set(symbols)
+        var result: [CanonicalSymbol: [PriceBar]] = [:]
+        for bar in bars where keys.contains(bar.canonicalSymbol)
+            && bar.interval == interval
+            && bar.timestamp >= from
+            && bar.timestamp <= to {
+            result[bar.canonicalSymbol, default: []].append(bar)
+        }
+        return result
+    }
+
+    func saveBars(_ bars: [PriceBar]) async throws {
+        self.bars.append(contentsOf: bars)
     }
 }

@@ -42,8 +42,8 @@ public struct HoldingsRootView: View {
                     }
                 }
             }
-            .task { await viewModel.load() }
-            .refreshable { await viewModel.load() }
+            .task { await viewModel.refresh() }
+            .refreshable { await viewModel.refresh() }
         }
         .accessibilityIdentifier("holdings.root")
     }
@@ -51,6 +51,13 @@ public struct HoldingsRootView: View {
     @ViewBuilder
     private func loadedContent(_ model: PortfolioHoldingsReadModel) -> some View {
         List {
+            if let banner = viewModel.refreshBanner {
+                Section {
+                    Text(banner)
+                        .font(PortfolioTypography.caption)
+                        .foregroundStyle(PortfolioColor.warning)
+                }
+            }
             Section {
                 VStack(alignment: .leading, spacing: PortfolioSpacing.sm) {
                     Text("All enabled accounts")

@@ -210,6 +210,57 @@ public actor SwiftDataPortfolioRepository: PortfolioRepository {
         try context.save()
     }
 
+    public func cachedBars(
+        symbols: [CanonicalSymbol],
+        interval: PriceBarInterval,
+        from: Date,
+        to: Date
+    ) async throws -> [CanonicalSymbol: [PriceBar]] {
+        let context = ModelContext(modelContainer)
+        let keys = Set(symbols.map(\.rawValue))
+        let intervalRaw = interval.rawValue
+        let records = try context.fetch(
+            FetchDescriptor<PriceBarRecord>(
+                predicate: #Predicate {
+                    $0.interval == intervalRaw && $0.timestamp >= from && $0.timestamp <= to
+                }
+            )
+        )
+        var result: [CanonicalSymbol: [PriceBar]] = [:]
+        for record in records where keys.contains(record.canonicalSymbol) {
+            let bar = try RecordMapping.domainBar(from: record)
+            result[bar.canonicalSymbol, default: []].append(bar)
+        }
+        for key in result.keys {
+            result[key]?.sort { $0.timestamp < $1.timestamp }
+        }
+        return result
+    }
+
+    public func saveBars(_ bars: [PriceBar]) async throws {
+        let context = ModelContext(modelContainer)
+        for bar in bars {
+            let id = "\(bar.canonicalSymbol.rawValue)|\(bar.interval.rawValue)|\(bar.timestamp.timeIntervalSince1970)"
+            var descriptor = FetchDescriptor<PriceBarRecord>(
+                predicate: #Predicate { $0.id == id }
+            )
+            descriptor.fetchLimit = 1
+            if try context.fetch(descriptor).first != nil {
+                continue
+            }
+            context.insert(
+                PriceBarRecord(
+                    canonicalSymbol: bar.canonicalSymbol.rawValue,
+                    timestamp: bar.timestamp,
+                    closeAmount: bar.close.amount,
+                    interval: bar.interval.rawValue,
+                    source: bar.source.rawValue
+                )
+            )
+        }
+        try context.save()
+    }
+
     // MARK: - Helpers
 
     private func upsertBrokerage(
@@ -240,6 +291,7 @@ public actor SwiftDataPortfolioRepository: PortfolioRepository {
             existing.asOf = quote.asOf
             existing.source = quote.source.rawValue
             existing.freshness = quote.freshness.rawValue
+            existing.session = quote.session.rawValue
         } else {
             context.insert(
                 QuoteRecord(
@@ -248,7 +300,8 @@ public actor SwiftDataPortfolioRepository: PortfolioRepository {
                     previousCloseAmount: quote.previousClose?.amount,
                     asOf: quote.asOf,
                     source: quote.source.rawValue,
-                    freshness: quote.freshness.rawValue
+                    freshness: quote.freshness.rawValue,
+                    session: quote.session.rawValue
                 )
             )
         }

@@ -24,12 +24,15 @@ public final class HoldingsViewModel {
     public private(set) var readModel: PortfolioHoldingsReadModel?
     public private(set) var isLoading = false
     public private(set) var errorMessage: String?
+    public private(set) var refreshBanner: String?
     public var sort: Sort = .marketValue
 
     private let getHoldings: GetPortfolioHoldings
+    private let refreshMarketData: RefreshMarketData?
 
-    public init(getHoldings: GetPortfolioHoldings) {
+    public init(getHoldings: GetPortfolioHoldings, refreshMarketData: RefreshMarketData? = nil) {
         self.getHoldings = getHoldings
+        self.refreshMarketData = refreshMarketData
     }
 
     public var sortedHoldings: [HoldingRowReadModel] {
@@ -53,5 +56,17 @@ public final class HoldingsViewModel {
         } catch {
             errorMessage = "Couldn't load holdings."
         }
+    }
+
+    public func refresh() async {
+        if let refreshMarketData {
+            let result = await refreshMarketData()
+            refreshBanner = result.failed
+                ? (result.usedStaleCache
+                    ? "Market data unavailable. Showing stale cached prices."
+                    : "Market data unavailable. Showing imported prices.")
+                : nil
+        }
+        await load()
     }
 }

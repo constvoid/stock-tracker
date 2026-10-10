@@ -7,6 +7,7 @@ public struct Quote: Hashable, Sendable, Codable {
     public let asOf: Date
     public let source: QuoteSource
     public let freshness: QuoteFreshness
+    public let session: MarketSession
 
     public init(
         canonicalSymbol: CanonicalSymbol,
@@ -14,7 +15,8 @@ public struct Quote: Hashable, Sendable, Codable {
         previousClose: Money? = nil,
         asOf: Date,
         source: QuoteSource,
-        freshness: QuoteFreshness
+        freshness: QuoteFreshness,
+        session: MarketSession = .regular
     ) {
         self.canonicalSymbol = canonicalSymbol
         self.price = price
@@ -22,6 +24,19 @@ public struct Quote: Hashable, Sendable, Codable {
         self.asOf = asOf
         self.source = source
         self.freshness = freshness
+        self.session = session
+    }
+
+    public func markingStale() -> Quote {
+        Quote(
+            canonicalSymbol: canonicalSymbol,
+            price: price,
+            previousClose: previousClose,
+            asOf: asOf,
+            source: source,
+            freshness: .stale,
+            session: session
+        )
     }
 }
 
@@ -45,4 +60,14 @@ public struct PriceBar: Hashable, Sendable, Codable {
         self.interval = interval
         self.source = source
     }
+}
+
+public enum TimeRange: String, Hashable, Sendable, Codable, CaseIterable {
+    case day
+    case week
+    case month
+    case ytd
+    case oneYear
+    case threeYears
+    case fiveYears
 }

@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phases 0–4
-complete on branch `phase-3-persistence-import`. Next: Phase 5 live market data.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–5
+in progress on branch `phase-3-persistence-import`.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -93,12 +93,12 @@ accounts, visibility, and import issues without live network data.
 
 ## Phase 5 — live market data
 
-- [ ] Implement provider symbol aliases and Yahoo-style `QuoteProviding`
+- [x] Implement provider symbol aliases and Yahoo-style `QuoteProviding`
   adapter (`MKT-001`).
-- [ ] Implement imported/cached/provider quote precedence and freshness.
-- [ ] Add previous-close daily change and pull-to-refresh.
-- [ ] Cache quotes; prove network failure never alters holdings (`MKT-002`).
-- [ ] Surface stale/partial/as-of states in Overview, Holdings, and Account
+- [x] Implement imported/cached/provider quote precedence and freshness.
+- [x] Add previous-close daily change and pull-to-refresh.
+- [x] Cache quotes; prove network failure never alters holdings (`MKT-002`).
+- [x] Surface stale/partial/as-of states in Overview, Holdings, and Account
   Detail.
 
 **Exit:** fresh quotes update all read models; offline/error states preserve and

@@ -1,8 +1,9 @@
+import Domain
 import Foundation
 import SwiftData
 
 public enum PortfolioSchemaV1: VersionedSchema {
-    public static let versionIdentifier = Schema.Version(1, 0, 0)
+    public static let versionIdentifier = Schema.Version(1, 1, 0)
 
     public static var models: [any PersistentModel.Type] {
         [
@@ -10,6 +11,7 @@ public enum PortfolioSchemaV1: VersionedSchema {
             AccountRecord.self,
             PositionSliceRecord.self,
             QuoteRecord.self,
+            PriceBarRecord.self,
             ImportAuditRecord.self,
         ]
     }
@@ -151,6 +153,7 @@ public final class QuoteRecord {
     public var asOf: Date
     public var source: String
     public var freshness: String
+    public var session: String
 
     public init(
         canonicalSymbol: String,
@@ -160,7 +163,8 @@ public final class QuoteRecord {
         previousCloseCurrency: String? = nil,
         asOf: Date,
         source: String,
-        freshness: String
+        freshness: String,
+        session: String = MarketSession.regular.rawValue
     ) {
         self.canonicalSymbol = canonicalSymbol
         self.priceAmount = priceAmount
@@ -170,6 +174,35 @@ public final class QuoteRecord {
         self.asOf = asOf
         self.source = source
         self.freshness = freshness
+        self.session = session
+    }
+}
+
+@Model
+public final class PriceBarRecord {
+    @Attribute(.unique) public var id: String
+    public var canonicalSymbol: String
+    public var timestamp: Date
+    public var closeAmount: Decimal
+    public var closeCurrency: String
+    public var interval: String
+    public var source: String
+
+    public init(
+        canonicalSymbol: String,
+        timestamp: Date,
+        closeAmount: Decimal,
+        closeCurrency: String = "USD",
+        interval: String,
+        source: String
+    ) {
+        self.id = "\(canonicalSymbol)|\(interval)|\(timestamp.timeIntervalSince1970)"
+        self.canonicalSymbol = canonicalSymbol
+        self.timestamp = timestamp
+        self.closeAmount = closeAmount
+        self.closeCurrency = closeCurrency
+        self.interval = interval
+        self.source = source
     }
 }
 

@@ -253,4 +253,15 @@ actor FakePortfolioRepository: PortfolioRepository {
     func saveQuotes(_ quotes: [Quote]) async throws {
         for quote in quotes { self.quotes[quote.canonicalSymbol] = quote }
     }
+
+    func cachedBars(
+        symbols: [CanonicalSymbol],
+        interval: PriceBarInterval,
+        from: Date,
+        to: Date
+    ) async throws -> [CanonicalSymbol: [PriceBar]] {
+        [:]
+    }
+
+    func saveBars(_ bars: [PriceBar]) async throws {}
 }

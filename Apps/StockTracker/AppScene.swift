@@ -8,6 +8,7 @@ import SwiftUI
 
 struct AppScene: View {
     let dependencies: AppDependencies
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectedAccountID: AccountID?
     @State private var overviewModel: OverviewViewModel
     @State private var holdingsModel: HoldingsViewModel
@@ -16,10 +17,16 @@ struct AppScene: View {
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
         _overviewModel = State(
-            initialValue: OverviewViewModel(getOverview: dependencies.getOverview)
+            initialValue: OverviewViewModel(
+                getOverview: dependencies.getOverview,
+                refreshMarketData: dependencies.refreshMarketData
+            )
         )
         _holdingsModel = State(
-            initialValue: HoldingsViewModel(getHoldings: dependencies.getHoldings)
+            initialValue: HoldingsViewModel(
+                getHoldings: dependencies.getHoldings,
+                refreshMarketData: dependencies.refreshMarketData
+            )
         )
         _settingsModel = State(
             initialValue: ImportSettingsViewModel(
@@ -70,6 +77,15 @@ struct AppScene: View {
                 Task {
                     await overviewModel.load()
                     await holdingsModel.load()
+                }
+            }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            // MKT-003: foreground activation refresh only (no background fetch).
+            if phase == .active {
+                Task {
+                    await overviewModel.refresh()
+                    await holdingsModel.refresh()
                 }
             }
         }

@@ -73,13 +73,30 @@ enum RecordMapping {
         } else {
             previous = nil
         }
+        let session = MarketSession(rawValue: record.session) ?? .regular
         return Quote(
             canonicalSymbol: CanonicalSymbol(record.canonicalSymbol),
             price: try Money(amount: record.priceAmount, currency: .usd),
             previousClose: previous,
             asOf: record.asOf,
             source: source,
-            freshness: freshness
+            freshness: freshness,
+            session: session
+        )
+    }
+
+    static func domainBar(from record: PriceBarRecord) throws -> PriceBar {
+        guard let interval = PriceBarInterval(rawValue: record.interval),
+              let source = QuoteSource(rawValue: record.source)
+        else {
+            throw PersistenceError.invalidStoredEnum
+        }
+        return PriceBar(
+            canonicalSymbol: CanonicalSymbol(record.canonicalSymbol),
+            timestamp: record.timestamp,
+            close: try Money(amount: record.closeAmount, currency: .usd),
+            interval: interval,
+            source: source
         )
     }
 }

@@ -79,7 +79,11 @@ let package = Package(
         ),
         .testTarget(
             name: "ApplicationTests",
-            dependencies: ["Application", "Domain", "DesignSystem"]
+            dependencies: ["Application", "Domain", "DesignSystem", "MarketData"]
+        ),
+        .testTarget(
+            name: "MarketDataTests",
+            dependencies: ["MarketData", "Domain", "Application"]
         ),
         .testTarget(
             name: "ImportingTests",

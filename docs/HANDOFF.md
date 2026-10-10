@@ -3,27 +3,22 @@
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
 **Branch:** `phase-3-persistence-import` (Phases 3–4 work; uncommitted unless
 committed in a later session)  
-**Status:** Phases 0–4 complete. Local SwiftData app with import UI and
-Overview/Holdings/Account Detail on imported prices. `swift test`: 27.  
+**Status:** Phases 0–5 complete. Live Yahoo-style quotes with extended hours,
+pull-to-refresh + foreground refresh, stale-on-failure. Next: Phase 6 history.  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) — start Phase 5 (live market data).
+2. Read [TODO.md](TODO.md) — start Phase 6 (reconstructed history).
 3. Use focused docs: [architecture.md](architecture.md), [ui-design.md](ui-design.md).
 
-## Implemented through Phase 4
+## Implemented through Phase 5
 
-- Import pipeline + SwiftData persistence (Phase 3).
-- DesignSystem tokens, money formatting, directional change indicators.
-- Read models / use cases: overview, holdings, account detail, settings,
-  visibility, stale resolution.
-- Three-tab shell: Overview (totals, movers placeholder, account breakdown),
-  Holdings (aggregated + cash), Settings (file import preview/confirm/result,
-  toggles, stale actions).
-- Account Detail sheet with cash-only and tax-term gating.
-- Chart UI deferred to Phase 6; Overview shows quality disclosure instead.
+- Phases 3–4 import/persistence/UI.
+- `YahooStyleQuoteProvider` (extended hours on), `FakeQuoteProvider`, symbol aliases.
+- `RefreshMarketData` with cache/stale behavior; holdings never cleared on failure.
+- Overview/Holdings refresh on pull and foreground activation (`MKT-003`).
 
 ## Build notes
 

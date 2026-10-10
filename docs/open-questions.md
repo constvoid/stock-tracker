@@ -10,25 +10,14 @@ reconciling design and TODOs.
   design documents. Implementation may proceed per [TODO.md](TODO.md).
 - Import samples and UI reference images were reviewed earlier; they remain
   local-only and gitignored.
+- **Market session prices (2026-10-10):** Include extended-hours prices when
+  provided (`MKT-001`). Previous close stays the prior regular-session close.
+- **Quote refresh (2026-10-10):** Pull-to-refresh and foreground activation only
+  (`MKT-003`). No background fetch in v1.
+- **Missing historical bars (2026-10-10):** Carry last close across
+  non-sessions; leave a gap for missing expected trading sessions (`HIST-005`).
 
 ## Must resolve before the affected phase
-
-### Before historical chart implementation
-
-- Missing daily/intraday bar behavior:
-  - carry the last known close across a missing market bar; or
-  - leave a chart gap.
-
-Recommended: carry across market-closed gaps only, but expose true provider
-data gaps. This needs a precise calendar rule in HIST requirements.
-
-### Before market-data implementation
-
-- Use regular-session prices only, or include extended-hours prices?
-- Refresh policy beyond manual/pull-to-refresh:
-  - foreground refresh only;
-  - opportunistic background refresh;
-  - scheduled background refresh where iOS permits.
 
 ### Before CarPlay implementation
 
@@ -58,3 +47,6 @@ CarPlay remains deferred and cannot block the iPhone car-glance surface.
 - Raw files discarded after import.
 - Intraday Day chart defaults to five-minute bars.
 - Dividends and realized gains are excluded from v1.
+- Extended-hours quotes are included when available.
+- Quote refresh is foreground + pull-to-refresh only.
+- History carries across closed-market gaps; gaps remaining expected sessions.

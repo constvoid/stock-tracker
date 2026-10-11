@@ -1,5 +1,6 @@
 import AccountDetailFeature
 import Application
+import CarGlanceFeature
 import Domain
 import HoldingsFeature
 import ImportSettingsFeature
@@ -10,9 +11,11 @@ struct AppScene: View {
     let dependencies: AppDependencies
     @Environment(\.scenePhase) private var scenePhase
     @State private var selectedAccountID: AccountID?
+    @State private var isCarGlancePresented = false
     @State private var overviewModel: OverviewViewModel
     @State private var holdingsModel: HoldingsViewModel
     @State private var settingsModel: ImportSettingsViewModel
+    @State private var carGlanceModel: CarGlanceViewModel
 
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -39,6 +42,13 @@ struct AppScene: View {
                 resolveStale: dependencies.resolveStale
             )
         )
+        _carGlanceModel = State(
+            initialValue: CarGlanceViewModel(
+                getOverview: dependencies.getOverview,
+                refreshMarketData: dependencies.refreshMarketData,
+                accountLimit: 4
+            )
+        )
     }
 
     var body: some View {
@@ -53,10 +63,21 @@ struct AppScene: View {
             }
             .tabItem { Label("Holdings", systemImage: "list.bullet") }
 
-            ImportSettingsRootView(viewModel: settingsModel) { accountID in
-                selectedAccountID = accountID
-            }
+            ImportSettingsRootView(
+                viewModel: settingsModel,
+                onSelectAccount: { accountID in
+                    selectedAccountID = accountID
+                },
+                onOpenCarGlance: {
+                    isCarGlancePresented = true
+                }
+            )
             .tabItem { Label("Settings", systemImage: "gearshape") }
+        }
+        .fullScreenCover(isPresented: $isCarGlancePresented) {
+            CarGlanceRootView(viewModel: carGlanceModel) {
+                isCarGlancePresented = false
+            }
         }
         .sheet(item: $selectedAccountID) { accountID in
             NavigationStack {

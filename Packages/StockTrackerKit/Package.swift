@@ -86,6 +86,10 @@ let package = Package(
             dependencies: ["MarketData", "Domain", "Application"]
         ),
         .testTarget(
+            name: "CarGlanceFeatureTests",
+            dependencies: ["CarGlanceFeature", "Application", "Domain"]
+        ),
+        .testTarget(
             name: "ImportingTests",
             dependencies: ["Importing", "Domain", "Application"],
             resources: [

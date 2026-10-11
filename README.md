@@ -9,9 +9,8 @@ Continue from [docs/HANDOFF.md](docs/HANDOFF.md). Full design index:
 
 ## Status
 
-Phases 0–6 complete on `phase-3-persistence-import`: import, UI, live quotes
-(with extended hours), and reconstructed history charts. Next: Phase 7 car
-glance.
+Phases 0–7 complete on `phase-3-persistence-import`: includes Car Glance
+(large-type iPhone mount view from Settings). Next: Phase 8 observed history.
 
 ## Build
 

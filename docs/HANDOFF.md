@@ -2,26 +2,22 @@
 
 **Repo:** `/Volumes/extssd/dev/macapps/stock-tracker`  
 **Branch:** `phase-3-persistence-import`  
-**Status:** Phases 0–6 complete. Live quotes (extended hours), reconstructed
-history charts with HIST-005 gap rules. `swift test`: 35. Next: Phase 7 car
-glance.  
+**Status:** Phases 0–7 complete. Car Glance is a full-screen iPhone surface from
+Settings (not CarPlay). Next: Phase 8 observed history.  
 **Approval:** Krishna approved the living specification and design (2026-10-10).
 
 ## Resume order
 
 1. Read [SPEC.md](SPEC.md). It is normative.
-2. Read [TODO.md](TODO.md) — start Phase 7 (iPhone car glance).
-3. Use focused docs: [architecture.md](architecture.md), [ui-design.md](ui-design.md),
-   [carplay.md](carplay.md).
+2. Read [TODO.md](TODO.md) — start Phase 8 (observed valuation snapshots).
+3. Use focused docs as needed.
 
-## Implemented through Phase 6
+## Implemented through Phase 7
 
-- Phases 3–5 import, UI, Yahoo-style quotes with extended hours.
-- Intraday (5m) + daily history providers; bar cache in SwiftData.
-- `HistoryReconstruction` + `GetHistoricalValue` for portfolio/account scopes.
-- Overview and Account Detail charts with range picker, scrub, reconstructed /
-  estimated disclosure.
-- Missing bars: carry across non-sessions; gap on missing trading days (`HIST-005`).
+- Phases 3–6: import, UI, live quotes, reconstructed charts.
+- `CarGlanceFeature`: large-type total, today's change, freshness, top accounts.
+- Opened from Settings → Driving → Open Car Glance (fullScreenCover).
+- Reuses `GetPortfolioOverview` / `RefreshMarketData`; no CarPlay entitlement.
 
 ## Build notes
 
@@ -35,8 +31,8 @@ xcodebuild -project StockTracker.xcodeproj -scheme StockTracker \
 
 ## What happens next
 
-1. Phase 7: large-type iPhone car-glance surface from shared overview use case.
-2. Do not block on CarPlay entitlement.
+1. Phase 8: persist valuation snapshots; prefer observed coverage in
+   `GetHistoricalValue` without changing feature APIs.
 
 ## Session rules
 

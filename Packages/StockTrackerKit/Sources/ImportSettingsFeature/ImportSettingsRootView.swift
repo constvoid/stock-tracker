@@ -7,14 +7,17 @@ import UniformTypeIdentifiers
 public struct ImportSettingsRootView: View {
     @Bindable private var viewModel: ImportSettingsViewModel
     private let onSelectAccount: (AccountID) -> Void
+    private let onOpenCarGlance: (() -> Void)?
     @State private var isImporterPresented = false
 
     public init(
         viewModel: ImportSettingsViewModel,
-        onSelectAccount: @escaping (AccountID) -> Void = { _ in }
+        onSelectAccount: @escaping (AccountID) -> Void = { _ in },
+        onOpenCarGlance: (() -> Void)? = nil
     ) {
         self.viewModel = viewModel
         self.onSelectAccount = onSelectAccount
+        self.onOpenCarGlance = onOpenCarGlance
     }
 
     public var body: some View {
@@ -155,9 +158,24 @@ public struct ImportSettingsRootView: View {
         }
     }
 
+    @ViewBuilder
     private var dataStatusSection: some View {
+        Section("Driving") {
+            if let onOpenCarGlance {
+                Button {
+                    onOpenCarGlance()
+                } label: {
+                    Label("Open Car Glance", systemImage: "car.side")
+                }
+                .accessibilityHint("Shows a large-type portfolio summary for a phone mount")
+            }
+            Text("Car Glance is an iPhone surface. It does not require CarPlay.")
+                .font(PortfolioTypography.caption)
+                .foregroundStyle(.secondary)
+        }
+
         Section("Data status") {
-            Text("Prices: imported fallback until live market data is enabled.")
+            Text("Prices refresh on pull and when the app becomes active.")
             Text("Storage: local-only on this device.")
             Text("Raw brokerage files are discarded after parsing.")
         }

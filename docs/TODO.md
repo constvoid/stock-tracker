@@ -1,7 +1,7 @@
 # Implementation TODO
 
-**Current state:** Specification and design approved (2026-10-10). Phases 0–6
-complete on branch `phase-3-persistence-import`. Next: Phase 7 car glance.
+**Current state:** Specification and design approved (2026-10-10). Phases 0–7
+complete on branch `phase-3-persistence-import`. Next: Phase 8 observed history.
 
 This checklist is subordinate to `SPEC.md`. When a requirement changes, edit
 the specification first and reconcile this file before implementation.
@@ -120,10 +120,10 @@ estimated history.
 
 ## Phase 7 — iPhone car glance
 
-- [ ] Implement large-type car-glance surface from shared overview use case
+- [x] Implement large-type car-glance surface from shared overview use case
   (`CAR-001`).
-- [ ] Limit content to total, today's change, freshness, and a few accounts.
-- [ ] Validate low-interaction layout; no chart/import/settings.
+- [x] Limit content to total, today's change, freshness, and a few accounts.
+- [x] Validate low-interaction layout; no chart/import/settings.
 
 **Exit:** glance works independently of CarPlay entitlement.
 
